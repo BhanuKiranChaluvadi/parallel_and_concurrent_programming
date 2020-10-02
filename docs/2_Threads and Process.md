@@ -7,6 +7,7 @@
   - [Concurrent versus Parallel execution](#concurrent-versus-parallel-execution)
   - [Execution Scheduling](#execution-scheduling)
   - [Execution Scheduling: C++ demo](#execution-scheduling-c-demo)
+  - [Thread life cycle](#thread-life-cycle)
 
 
 # Threads and Process
@@ -98,4 +99,25 @@ Some of these algorithms are preemptive which means they may pause or preempt a 
 Now, while it's important to understand the concept of scheduling and that it's taking place, you usually don't need to worry about the nitty gritty details of how the scheduler works because it's often handled under the hood by the operating system. In fact, you might not have any control over when the parts of your program actually execute. - And that's an important thing to keep in mind. Avoid writing programs expecting that multiple threads or processes will execute in a certain order or for an equal amount of time, because the operating system may choose to schedule them differently from run to run.
 
 ## Execution Scheduling: C++ demo
+
+## Thread life cycle
+
+When a new process or program begins running it will start with just one thread, which is called the main thread because it's the main one that runs when the program begins. That main thread can then start or spawn additional threads to help out, referred to as its child threads, which are part of the same process but execute independently to do other tasks. Those threads can spawn their own children if needed. 
+![](img/02_06_01.png)
+And as each of those threads finish executing they'll ***notify their parent and terminate*** with the main thread usually being the last to finish execution. Over the lifecycle of a thread from creation through execution and finally termination, threads will usually be in one of four states. If I'm the main thread in this kitchen and I spawn or create another thread to help me, that child thread will begin in the new state. - Hello. - This thread isn't actually running yet so it doesn't take any CPU resources. - I don't even know what I'm supposed to be doing. - Part of creating a new thread is assigning it a function, the code it's going to execute. Olivia, I need you to slice these sausages. We're making soup. - I can do that. I'm ready to start. - Right, you can start now. Some programming languages require you to explicitly start a thread after creating it. - [Olivia] Now that I've started, I'm in the runnable state, which means the operating system can schedule me to execute. ***Through contact switches, I'll get swapped out with other threads to run on one of the available processors***. 
+![](img/02_06_02.png)
+Olivia is running independently now so my thread is free to continue executing my own tasks when it's my turn to get scheduled on the processor. - Oh man, this sausage is frozen. I need to wait for it to thaw before I can continue. When a thread needs to wait for an event to occur, like an external input or a timer, it goes into a blocked state while it waits. 
+![](img/02_06_03.png)
+The good thing is that while I'm blocked, I'm not using any CPU resources. The operating system will return me to the runnable state when the sausage is thawed. - And that frees up the processor for other threads to use. Now, my thread may eventually reach a point where I need to wait until one of my children threads has finished for me to continue on. Maybe I've finished preparing everything else. I've completed all of my tasks and I need Olivia to finish slicing the sausage. ***I can wait for her thread to complete its execution by calling the join method***. 
+![](img/02_06_03.png)
+***When I call join, my thread will enter a blocked state waiting until Olivia is done*** . - Ah, the sausage is finally thawed. Now, I'll go back to the runnable state and continue executing. (fast forwarding) Now I've finished executing so ***I'll notify my parent thread that I'm done***. Hey Darren, I'm done. And then I'll enter the final terminated state. A thread enters the terminated state when it either completes its execution or is abnormally aborted.
+![](img/02_06_04.png)
+Since Olivia notified me that she's done, I'll return to the runnable state so I can continue preparing soup. Now, different programming languages may use different names for their states and have a few additional ones but in general,
+
+ - new, 
+ - runnable, 
+ - blocked, and 
+ - terminated 
+
+are the four phases of the lifecycle of a thread.
 
