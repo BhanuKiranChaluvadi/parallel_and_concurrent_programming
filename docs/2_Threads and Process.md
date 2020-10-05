@@ -8,6 +8,9 @@
   - [Execution Scheduling](#execution-scheduling)
   - [Execution Scheduling: C++ demo](#execution-scheduling-c-demo)
   - [Thread life cycle](#thread-life-cycle)
+  - [Thread life cycle: C++ demo](#thread-life-cycle-c-demo)
+  - [Detached thread](#detached-thread)
+  - [Detached thread: C++ demo](#detached-thread-c-demo)
 
 
 # Threads and Process
@@ -121,3 +124,22 @@ Since Olivia notified me that she's done, I'll return to the runnable state so I
 
 are the four phases of the lifecycle of a thread.
 
+
+## Thread life cycle: C++ demo
+
+![](img/02_07_01.png)
+Baron thread calls the join function. Notice that we're calling the join function on the Olivia thread object from within the main Baron thread that will block Baron's execution there until Olivia terminates, at which point the main bearing thread will be able to continue on to print its final message that they're both done.
+
+## Detached thread
+
+***We often create threads to provide some sort of service, or perform a periodic task in support of the main program. A common example of that is garbage collection***. A garbage collector is a form of automatic memory management that runs in the background, and attempts to reclaim garbage, or memory that's no longer being used by the program. 
+![](img/02_08_01.png)
+Many languages include garbage collection as standard part of their runtime environment, but for this demonstration, I'll spawn my own new thread to handle garbage collection. Olivia is a separate child thread that will execute independently of my main thread so I can continue doing what I'm doing here, getting my soup ingredients ready. While I try to reclaim some memory, or counter space by clearing out Barron's garbage. This setup with Olivia running as a separate thread to provide that garbage collection service will work fine until I'm ready to finish executing. Bam! Now my soup's spiced and ready. My main thread is done executing. And I'm ready to exit the program, but I can't. - Because I'm still running. ***Since Barron spawned me as normal child thread, he won't be able to execute until I've terminated. And since Olivia's thread is designed to collect garbage in a continuous loop, she'll never exit. I'll be stuck here, waiting forever. And this process will never terminate***. 
+
+***Threads that are performing background tasks like garbage collection can be detached from the main program by making them what's called a daemon thread***. 
+![](img/02_08_02.png)
+
+And daemon thread which you may also hear pronounced as daemon is a thread that will not prevent the program from exiting if it's still running. By default, new thread are usually spawned as non-daemon, or normal threads, and you have to explicitly turn a thread into a daemon or background thread. Olivia, I forgot to tell you this earlier, but you're a daemon thread. - Oh man, you detached me. - When my main thread is finished executing and there aren't any non-daemon threads left running, this process can terminate. And Olivia's daemon thread will terminate with it. - ***Since I was terminated abruptly with the process, I didn't have a chance to gracefully shutdown and stop what I was doing***. That's fine, in the case of a garbage collection routine because all of the memory this process was using will get cleared as part of terminating it. ***But if I was doing some sort of io operation like writing to a file, then terminating in the middle of that operation could end up corrupting data***. If you detach a thread to make it a background task, make sure it won't have any negative side effects if it prematurely exits.
+
+## Detached thread: C++ demo
+ 
